@@ -1,63 +1,41 @@
 class Solution {
 
+    boolean[][][] seen;
+    int m, n, mid;
     public boolean hasValidPath(char[][] grid) {
-
-        int m = grid.length;
-        int n = grid[0].length;
-
-  
-        if ((m + n) % 2 == 0) {
+        m = grid.length;
+        n = grid[0].length;
+        if ((m + n) % 2 == 0 || grid[0][0] == ')' || grid[m - 1][n - 1] == '(') {
             return false;
         }
-        if (grid[0][0] == ')' || grid[m - 1][n - 1] == '(') {
-            return false;
-        }
+        mid = (m + n) / 2;
+        seen = new boolean[m][n][mid + 1];
 
-        Set<Integer>[][] dp = new HashSet[m][n];
-
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-                dp[i][j] = new HashSet<>();
-            }
-        }
-
-        dp[0][0].add(1);
-
-        for (int i = 0; i < m; i++) {
-            for (int j = 0; j < n; j++) {
-
-                if (i == 0 && j == 0) {
-                    continue;
-                }
-
-                if (i > 0) {
-                    addBalances(dp[i][j], dp[i - 1][j], grid[i][j]);
-                }
-                if (j > 0) {
-                    addBalances(dp[i][j], dp[i][j - 1], grid[i][j]);
-                }
-            }
-        }
-
-        return dp[m - 1][n - 1].contains(0);
+        return dfs(grid, 0, 0, 0);
     }
 
-    private void addBalances(Set<Integer> current,
-                             Set<Integer> previous,
-                             char ch) {
+    private boolean dfs(char[][] g, int r, int c, int bal) {
 
-        for (int balance : previous) {
+        bal += g[r][c] == '(' ? 1 : -1;
 
-            int newBalance;
-
-            if (ch == '(') {
-                newBalance = balance + 1;
-            } else {
-                newBalance = balance - 1;
-            }
-            if (newBalance >= 0) {
-                current.add(newBalance);
-            }
+        if (bal < 0 || bal > mid) {
+            return false;
         }
+
+        if (r == m - 1 && c == n - 1) {
+            return bal == 0;
+        }
+
+        if (seen[r][c][bal]) {
+            return false;
+        }
+
+        seen[r][c][bal] = true;
+
+        if (r + 1 < m && dfs(g, r + 1, c, bal)) {
+            return true;
+        }
+
+        return c + 1 < n && dfs(g, r, c + 1, bal);
     }
 }
