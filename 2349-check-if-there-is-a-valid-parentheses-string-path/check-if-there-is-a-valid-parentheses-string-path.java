@@ -1,78 +1,63 @@
 class Solution {
 
-   public static void update(int[][] dp1, int[][] dp2, int x, int y, int v) {
-        if (dp1[x][y] < 0) {
-            dp1[x][y] = dp2[x][y] = v;
-        } else if (v > dp2[x][y]) {
-            dp2[x][y] = v;
-        } else if (v < dp1[x][y]) {
-            dp1[x][y] = v;
-        }
-    }
-
-    public static void update(int[][] dp1, int[][] dp2, char[][] grid,
-                int x, int y, int ox, int oy) {
-
-        if (dp1[ox][oy] < 0) {
-            return;
-        }
-
-        if (grid[x][y] == '(') {
-            update(dp1, dp2, x, y, dp1[ox][oy] + 1);
-            update(dp1, dp2, x, y, dp2[ox][oy] + 1);
-        } else {
-            if (dp2[ox][oy] >= 1) {
-                if (dp1[ox][oy] >= 1) {
-                    update(dp1, dp2, x, y, dp1[ox][oy] - 1);
-                }
-
-                update(dp1, dp2, x, y, dp2[ox][oy] - 1);
-            }
-        }
-    }
-
     public boolean hasValidPath(char[][] grid) {
 
         int m = grid.length;
         int n = grid[0].length;
 
-        if (grid[0][0] == ')' ||
-            grid[m - 1][n - 1] == '(' ||
-            ((m + n) & 1) == 0) {
-
+  
+        if ((m + n) % 2 == 0) {
+            return false;
+        }
+        if (grid[0][0] == ')' || grid[m - 1][n - 1] == '(') {
             return false;
         }
 
-        int[][] dp1 = new int[m][n];
-        int[][] dp2 = new int[m][n];
+        Set<Integer>[][] dp = new HashSet[m][n];
 
-        
         for (int i = 0; i < m; i++) {
-            java.util.Arrays.fill(dp1[i], -1);
-            java.util.Arrays.fill(dp2[i], -1);
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = new HashSet<>();
+            }
         }
 
-        dp1[0][0] = 1;
-        dp2[0][0] = 1;
+        dp[0][0].add(1);
 
         for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
 
-            int start = (i == 0) ? 1 : 0;
-
-            for (int j = start; j < n; j++) {
-
-            
-                if (i > 0) {
-                    update(dp1, dp2, grid, i, j, i - 1, j);
+                if (i == 0 && j == 0) {
+                    continue;
                 }
 
-                
+                if (i > 0) {
+                    addBalances(dp[i][j], dp[i - 1][j], grid[i][j]);
+                }
                 if (j > 0) {
-                    update(dp1, dp2, grid, i, j, i, j - 1);
+                    addBalances(dp[i][j], dp[i][j - 1], grid[i][j]);
                 }
             }
         }
 
-        return dp1[m - 1][n - 1] == 0;
+        return dp[m - 1][n - 1].contains(0);
+    }
+
+    private void addBalances(Set<Integer> current,
+                             Set<Integer> previous,
+                             char ch) {
+
+        for (int balance : previous) {
+
+            int newBalance;
+
+            if (ch == '(') {
+                newBalance = balance + 1;
+            } else {
+                newBalance = balance - 1;
+            }
+            if (newBalance >= 0) {
+                current.add(newBalance);
+            }
+        }
     }
 }
