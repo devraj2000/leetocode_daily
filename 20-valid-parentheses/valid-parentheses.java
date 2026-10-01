@@ -1,17 +1,32 @@
 class Solution {
-    public boolean isValid(String str) {
-        if (str.length() % 2 == 1)
-            return false;
+    public boolean isValid(String s) {
+        if (s.length() % 2 != 0) return false;
 
-        char[] S = str.toCharArray();
-        int j = 0;
+        char[] stack = new char[s.length()];
+        int head = 0;
 
-        for (char c : S)
-            if ((c & 3) != 1)
-                S[j++] = c;
-            else if (j == 0 || ((c - S[--j] + 1) >> 1) != 1)
-                return false;        
+        for (char c : s.toCharArray()) {
 
-        return j == 0;
+            switch (c) {
+                case '(':
+                    stack[head++] = ')';
+                    break;
+
+                case '{':
+                    stack[head++] = '}';
+                    break;
+
+                case '[':
+                    stack[head++] = ']';
+                    break;
+
+                default:
+                    if (head == 0 || stack[--head] != c) {
+                        return false;
+                    }
+            }
+        }
+
+        return head == 0;
     }
 }
