@@ -1,5 +1,4 @@
-class Solution {
-    /**
+ /**
      * Finds the maximum number of compatible card pairs containing x.
      *
      * Cards containing x are divided into two groups: x? and ?x.
@@ -17,6 +16,10 @@ class Solution {
      * @param x the required character
      * @return the maximum possible number of points
      */
+
+
+class Solution {
+   
     public int score(String[] cards, char x) {
         int[] left = new int[10];
         int[] right = new int[10];
