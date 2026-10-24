@@ -1,3 +1,8 @@
+// Find the later arrival date using overlapStart.
+// Find the earlier leaving date using overlapEnd.
+// If the start is after the end, they never meet, so return 0.
+// Otherwise, calculate the difference in days and add 1 because both dates are inclusive.
+
 import java.time.LocalDate;
 
 class Solution {
